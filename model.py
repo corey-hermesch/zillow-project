@@ -157,3 +157,60 @@ def get_glm_train_val_metrics(X_train, y_train, X_val, y_val, power=0, alpha=0):
     RMSE_val, R2_val = metrics_reg(y_val, y_pred_val)
     
     return RMSE_train, R2_train, RMSE_val, R2_val
+
+# defining a function to get metrics for baseline, OLS, LassoLars, Polynomial Regression, and GLM
+def get_reg_model_metrics_df(X_train_scaled, y_train, X_validate_scaled, y_validate
+                            ,alpha=1, power=2, degrees=2):
+    """
+    This function will
+    - accept X_train_scaled, y_train, X_validate_scaled, y_validate
+    - accept values for alpha, power, and degrees; default values are 1/2/2
+        - alpha is a hyperparameter for LassoLARS
+        - power is a hyperparameter for Polynomial Regressioin
+        - degrees is a hyperparameter for GLM
+    - call multiple regression models and get metrics for each
+    - return a dataframe with metrics for
+        - baseline (mean)
+        - OLS (Ordinary Least Squares)
+        - LassoLars
+        - Polynomial Regression
+        - GLM (Generalized Linear Model)
+    """
+    # get baseline first
+    RMSE_train, R2_train, RMSE_val, R2_val = get_baseline_train_val_metrics(y_train, y_validate)
+
+    #initialize dataframe with results
+    results_df = pd.DataFrame( data=[{'model':'baseline', 
+                                      'RMSE_train': RMSE_train, 
+                                      'R^2_train': R2_train,
+                                      'RMSE_validate': RMSE_val,
+                                      'R^2_validate': R2_val}])
+    # get OLS metrics 
+    RMSE_train, R2_train, RMSE_val, R2_val= get_ols_train_val_metrics(X_train_scaled, 
+                                                                  y_train, 
+                                                                  X_validate_scaled, 
+                                                                  y_validate)
+    results_df.loc[1] = ['ols', RMSE_train, R2_train, RMSE_val, R2_val]
+    
+    # get LassoLars metrics alpha=1
+    RMSE_train, R2_train, RMSE_val, R2_val = get_lassolars_train_val_metrics(X_train_scaled, 
+                                                                         y_train, 
+                                                                         X_validate_scaled, 
+                                                                         y_validate)
+    results_df.loc[2] = ['LassoLars', RMSE_train, R2_train, RMSE_val, R2_val]
+    
+    # get polynomial regression metrics, degrees=2
+    RMSE_train, R2_train, RMSE_val, R2_val = get_polynomial_train_val_metrics(X_train_scaled, 
+                                                                         y_train, 
+                                                                         X_validate_scaled, 
+                                                                         y_validate)
+    results_df.loc[3] = ['Polynomial Regression', RMSE_train, R2_train, RMSE_val, R2_val]
+    
+    # get GLM metrics (power = 0, alpha = 0)
+    RMSE_train, R2_train, RMSE_val, R2_val = get_glm_train_val_metrics(X_train_scaled, 
+                                                                         y_train, 
+                                                                         X_validate_scaled, 
+                                                                         y_validate)
+    results_df.loc[4] = ['GLM', RMSE_train, R2_train, RMSE_val, R2_val]
+    
+    return results_df

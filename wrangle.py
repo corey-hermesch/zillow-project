@@ -101,7 +101,7 @@ def wrangle_zillow():
     - 2. rename the columns to something more useful
     - 3. change has_pool nulls to 0
     - 3. drop the remaining nulls
-    - 4. changes the datatype to int for all numeric columns except bathrooms
+    - 4. change the datatype to int for all numeric columns except bathrooms
     - 5. drop outliers (property_value > $1.5M and lotsize_sqft > 60000
     
     - returns a df that looks like this:
@@ -112,8 +112,9 @@ def wrangle_zillow():
         - squarefeet - int
         - year - int
         - county - string
-        - county_Orange - int
-        - county_Ventura - int
+        - dummy columns for later modeling
+            - county_Orange - int
+            - county_Ventura - int
     """
     # first get the data from csv or sql
     df = get_zillow_data()
