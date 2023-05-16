@@ -16,6 +16,28 @@ import evaluate as ev
 import warnings
 warnings.filterwarnings('ignore')
 
+# defining function to split train/validate/test into X dataframe and y series
+def get_X_y_baseline(train, validate, test, target='property_value'):
+    """
+    This function is specific to zillow dataframe (X_columns are hard_coded) It will
+    - take the train, validate, and test dataframes as well as the target variable (string)
+    - assumes train/validate/test are numeric/scaled columns only (i.e. ready for modeling)
+    - split the dataframes into X_train/validate/test and y_train/validate/test
+    - return all 6 dataframes/series in order: X_train/validate/test, y_train/validate/test
+    """
+    # set X_columns
+    X_columns = ['bathrooms', 'bedrooms', 'has_pool', 'squarefeet', 'lotsize_sqft', 'year', 'county_Orange', 'county_Ventura']
+
+    # split train/validate/test into X, y
+    X_train = train[X_columns]
+    y_train = train[target]
+    X_validate =validate[X_columns]
+    y_validate = validate[target]
+    X_test = test[X_columns]
+    y_test = test[target]
+    
+    return X_train, X_validate, X_test, y_train, y_validate, y_test
+
 # copying function from Misty to help get metrics for comparing models
 def metrics_reg(y, yhat):
     """
@@ -214,3 +236,22 @@ def get_reg_model_metrics_df(X_train_scaled, y_train, X_validate_scaled, y_valid
     results_df.loc[4] = ['GLM', RMSE_train, R2_train, RMSE_val, R2_val]
     
     return results_df
+
+# defining a function to print out final metrics on test
+def print_poly_reg_metrics(X_train, y_train, X_test, y_test):
+    """
+    This function will 
+    - accept X_train, y_train, X_test, and y_test
+    - call get_polynomial_train_val_metrics and print out the results
+    - returns nothing
+    """
+    
+    RMSE_train, R2_train, RMSE_test, R2_test = get_polynomial_train_val_metrics(X_train, y_train, X_test, y_test)
+    
+    print(f'RMSE on train is {RMSE_train}')
+    print(f'R^2 on train is {R2_train}')
+    print(f'RMSE on test is {RMSE_test}')
+    print(f'R^2 on test is {R2_test}')
+    
+    return
+    

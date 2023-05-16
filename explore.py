@@ -8,13 +8,99 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from scipy.stats import pearsonr, spearmanr
+from scipy.stats import pearsonr, spearmanr, f_oneway, ttest_ind
 
 from sklearn.feature_selection import SelectKBest, f_regression, RFE
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, QuantileTransformer
 
 # FUNCTIONS
+#defining a function for the final_report notebook to print out a nice visual of the target: property_value
+def get_target_plot (df, target='property_value'):
+    """
+    This function will 
+    - accept a dataframe and a target column which is continuous
+    - make two subplots of the target: a boxplot and a histplot with the mean vertical line plotted in red
+    - the function was initially coded for the Zillow project, thus the target is defaulted to 'property_value' 
+    - returns nothing
+    - can be made more pretty with some callouts and possibly putting another vertical line in for median
+    """
+    plt.figure(figsize=(12,6))
+    plt.subplot(1,2,1)
+    sns.boxplot(df[target])
+    plt.title('Boxplot')
+    plt.xticks(ticks=[0,200_000,400_000,600_000,800_000,1_000_000,1_200_000,1_400_000]
+               ,labels=['0', '200', '400', '600', '800', '1,000', '1,200', '1,400'])
+    plt.xlabel('Property Value in thousands of dollars')
+    plt.axvline(x=df[target].mean(), color='r')
+
+    plt.subplot(1,2,2)
+    sns.histplot(df[target])
+    plt.title('Histogram')
+    plt.xticks(ticks=[0,200_000,400_000,600_000,800_000,1_000_000,1_200_000,1_400_000]
+               ,labels=['0', '200', '400', '600', '800', '1,000', '1,200', '1,400'])
+    plt.xlabel('Property Value in thousands of dollars')
+    plt.axvline(x=df[target].mean(), color='r')
+
+    plt.suptitle(f'Distribution of property_value (Average: ${int(df[target].mean()/1000)}K)')
+
+    plt.show()
+    
+# defining a function for the final_report to plot two continuous variables (generaly y is the target: property_value)
+def get_reg_plot(df, x, y='property_value'):
+    """
+    This function will
+    - accept a dataframe and the x and y column names to plot
+    - plot a regplot
+    - return nothing
+    """
+    sns.regplot(data=df, x=x, y=y, line_kws={'lw': 1, 'color': 'red'})
+    plt.show()
+    return
+
+# defining a function to plot a categorica variable vs the target which is continuous    
+def get_box_plot(df, x, y='property_value'):
+    """
+    This function will
+    - accept a dataframe and the x and y column names to plot
+    - plot a boxplot
+    - return nothing
+    """
+    sns.boxplot(data=df, x='has_pool', y='property_value')
+    plt.show()
+    return
+
+# defining a function to print t, p from a pearsonr test    
+def get_pearsonr(df, x, y='property_value'):
+    """
+    This function will 
+    - accept a dataframe, and two columns: x and y
+    - run a pearsonr stats test
+    - print out the t, p statistics
+    
+    """
+    t, p = pearsonr(df[x], df[y])
+    print (f't = {t}')
+    print (f'p = {p}')
+    return
+
+# defining a function to print t, p from a t test, f_oneway  
+def get_has_pool_f_oneway(df, target='property_value'):
+    """
+    This function is specific to the has_pool column in the zillow database. It will 
+    - accept a dataframe, and the target (default to 'property_value')
+    - run a f_oneway stats test on the property_values of has_pool == 1 vs has_pool == 0
+    - print out the t, p statistics
+    
+    """
+    y1 = df[df.has_pool == 1][target]
+    y2 = df[df.has_pool == 0][target]
+    t, p = f_oneway(y1, y2)
+    print (f't = {t}')
+    print (f'p = {p}')
+    return
+
+# defining a function to help plot continuous variable pairs in the explore phase (pairplot is nice for this, too)  
 def plot_variable_pairs(train, cols):
     """
     This function is specific to zillow. It will
@@ -30,7 +116,9 @@ def plot_variable_pairs(train, cols):
         sns.lmplot(data=sample, x=col, y=cols[-1])
         plt.title(f'{cols[-1]} vs {col}')
         plt.show()
+    return
 
+# defining a function to plot categorical vs continuous variables in the explore phase        
 def plot_categorical_and_continuous_vars(train, cols_contin, cols_cat):
     """
     This function will
@@ -58,6 +146,7 @@ def plot_categorical_and_continuous_vars(train, cols_contin, cols_cat):
             sns.boxplot(data=sample, x=cat, y=col)
             plt.title(f'{cat} vs. {col}, boxplot')
             plt.show()
+    return
 
 # define a function to return what the kbest features are
 def get_kbest_multi (X_train_scaled, y_train):
