@@ -76,4 +76,4 @@ My initial hypothesis is that square feet, number of bathrooms, number of bedroo
 * Given the RMSE value is still so high, I would not use this model as the primary source of estimating home value
 * That said, there are clear correlations between the features in my model and property value; it just needs a bit more refinement
     * In particular, incorporate location data
-    * If possible, gather more data: for example school district, specific school minor children would attend, and performance metrics of those schools
+    * Consider collecting more data, such as school district, which specific schools are associated with a property, and those schools' performance metrics
