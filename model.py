@@ -250,6 +250,7 @@ def print_poly_reg_metrics(X_train, y_train, X_test, y_test):
     
     print(f'RMSE on train is {RMSE_train}')
     print(f'R^2 on train is {R2_train}')
+    print()
     print(f'RMSE on test is {RMSE_test}')
     print(f'R^2 on test is {R2_test}')
     

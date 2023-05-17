@@ -73,5 +73,7 @@ My initial hypothesis is that square feet, number of bathrooms, number of bedroo
     * Note: a lower RMSE and a higher R^2 is desirable.
     
 # Recommendations
-* Refine this model further with previous year's property values to show trends
-* With more time, investigate additional features available in Zillow database
+* Given the RMSE value is still so high, I would not use this model as the primary source of estimating home value
+* That said, there are clear correlations between the features in my model and property value; it just needs a bit more refinement
+    * In particular, incorporate location data
+    * If possible, gather more data: for example school district, specific school minor children would attend, and performance metrics of those schools

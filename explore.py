@@ -33,7 +33,9 @@ def get_target_plot (df, target='property_value'):
                ,labels=['0', '200', '400', '600', '800', '1,000', '1,200', '1,400'])
     plt.xlabel('Property Value in thousands of dollars')
     plt.axvline(x=df[target].mean(), color='r')
-
+    # plt.text(412_000,-0.45, 'Mean', fontsize=10, color='red')
+    plt.annotate('Mean', xy=(412_000, -0.35), xytext=(700_000, -0.32), arrowprops={'facecolor': 'red'})
+    
     plt.subplot(1,2,2)
     sns.histplot(df[target])
     plt.title('Histogram')
@@ -42,7 +44,7 @@ def get_target_plot (df, target='property_value'):
     plt.xlabel('Property Value in thousands of dollars')
     plt.axvline(x=df[target].mean(), color='r')
 
-    plt.suptitle(f'Distribution of property_value (Average: ${int(df[target].mean()/1000)}K)')
+    plt.suptitle(f'Distribution of property_value (Mean: ${int(df[target].mean()/1000)}K)', fontweight='bold')
 
     plt.show()
     

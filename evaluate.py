@@ -8,6 +8,7 @@ import seaborn as sns
 from sklearn.metrics import mean_squared_error, r2_score, explained_variance_score
 from sklearn.linear_model import LinearRegression
 from sklearn.feature_selection import f_regression
+from sklearn.preprocessing import PolynomialFeatures
 
 import wrangle as w
 
@@ -195,3 +196,39 @@ def better_than_baseline(y, yhat):
         return True
     else:
         return False
+
+# defining a function to plot visualization of how well to the top model (Polynomial Regression) performed
+def plot_poly_residuals(X_train_scaled, y_train, X_test_scaled, y_test):
+    """
+    This function will
+    - accept X_train_scaled, y_train, X_test_scaled, y_test
+    - build a Polynomial Regression model with degrees=2
+    - call plot_residuals to visualize how well the model predicted the values
+    """
+    # make the "thing" so I can get new polynomial features to send in to a different thing
+    pf = PolynomialFeatures(degree=2)
+
+    #fit the thing
+    pf.fit(X_train_scaled)
+
+    # use the thing to make new feature values
+    X_train_degree2 = pf.transform(X_train_scaled)
+    X_test_degree2 = pf.transform(X_test_scaled)
+
+    # make the linear regression model to be used with polynomial features
+    pr = LinearRegression()
+
+    # fit it on train
+    pr.fit(X_train_degree2, y_train)
+
+    # use it on test to predict test target
+    y_pred = pr.predict(X_test_degree2)
+    
+    # make y_pred a Series fro plotting
+    y_pred = pd.Series(y_pred)
+    
+    # plot residuals
+    plot_residuals(y_test, y_pred)
+    
+    return
+
