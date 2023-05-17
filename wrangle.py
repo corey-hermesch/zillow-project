@@ -50,29 +50,30 @@ def get_csv_export_url(g_sheet_url):
 
 # defining a function to get zillow data from either a cached csv or the Codeup MySQL server
 def get_zillow_data(sql_query= """
-                        SELECT parcelid, bathroomcnt, bedroomcnt, poolcnt
-                                , calculatedfinishedsquarefeet, lotsizesquarefeet, yearbuilt
-                                , fips, regionidcity, regionidzip
-                                , latitude, longitude, rawcensustractandblock, censustractandblock, taxvaluedollarcnt
-                        FROM properties_2017
-                        JOIN propertylandusetype USING (propertylandusetypeid)
-                        JOIN (
-                            SELECT parcelid, logerror, maxdates.transactiondate
-                            FROM (
-                                SELECT parcelid, MAX(transactiondate) as transactiondate
-                                FROM predictions_2017
-                                GROUP BY parcelid ) as maxdates
-                            JOIN predictions_2017 using (parcelid)
-                            WHERE predictions_2017.transactiondate = maxdates.transactiondate
-                            ) AS target_transactions USING (parcelid)
-                        WHERE (propertylandusedesc = 'Single Family Residential')
+                    SELECT parcelid, bathroomcnt, bedroomcnt, poolcnt
+                            , calculatedfinishedsquarefeet, lotsizesquarefeet, yearbuilt
+                            , fips, regionidcity, regionidzip
+                            , latitude, longitude, rawcensustractandblock, censustractandblock, taxvaluedollarcnt
+                    FROM properties_2017
+                    JOIN propertylandusetype USING (propertylandusetypeid)
+                    JOIN (
+                        SELECT parcelid, logerror, maxdates.transactiondate
+                        FROM (
+                            SELECT parcelid, MAX(transactiondate) as transactiondate
+                            FROM predictions_2017
+                            WHERE transactiondate LIKE '%2017%'
+                            GROUP BY parcelid ) as maxdates
+                        JOIN predictions_2017 using (parcelid)
+                        WHERE predictions_2017.transactiondate = maxdates.transactiondate
+                        ) AS target_transactions USING (parcelid)
+                    WHERE (propertylandusedesc = 'Single Family Residential')
                     """
                     , filename="zillow.csv"):
     
     """
     This function will:
     -input 2 strings: sql_query, filename 
-        default query selects specific columns from zillow database that I determined to be useful
+        default query selects specific columns from zillow database that determined to be useful
         default filename "zillow.csv"
     - check the current directory for filename (csv) existence
       - return df from that filename if it exists
