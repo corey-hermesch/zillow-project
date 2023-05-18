@@ -49,6 +49,8 @@ def get_csv_export_url(g_sheet_url):
     return csv_url
 
 # defining a function to get zillow data from either a cached csv or the Codeup MySQL server
+# this particular function is specific to zillow because of the LIKE '%2017%' in the sql query
+# I handled this via hard-coding below
 def get_zillow_data(sql_query= """
                     SELECT parcelid, bathroomcnt, bedroomcnt, poolcnt
                             , calculatedfinishedsquarefeet, lotsizesquarefeet, yearbuilt
@@ -61,7 +63,7 @@ def get_zillow_data(sql_query= """
                         FROM (
                             SELECT parcelid, MAX(transactiondate) as transactiondate
                             FROM predictions_2017
-                            WHERE transactiondate LIKE '%2017%'
+                            WHERE transactiondate LIKE %s
                             GROUP BY parcelid ) as maxdates
                         JOIN predictions_2017 using (parcelid)
                         WHERE predictions_2017.transactiondate = maxdates.transactiondate
@@ -88,7 +90,9 @@ def get_zillow_data(sql_query= """
         return df
     else:
         url = get_db_url('zillow')
-        df = pd.read_sql(sql_query, url)
+
+        # this is the hard-coded part; params replaces '%s' in the query string and it works
+        df = pd.read_sql(sql_query, url, params=['2017%'])
         df.to_csv(filename, index=False)
         print ("csv file not found, data read from sql query, csv created")
         return df
